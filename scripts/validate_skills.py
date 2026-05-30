@@ -142,7 +142,7 @@ FIXTURE_REQUIRED_CONTENT = {
         "python3 scripts/validate_skills.py",
     ],
     "CHANGELOG.md": [
-        "## Unreleased",
+        "## v0.2.0 - 2026-05-30",
         "Native iOS release-risk fixture",
         "Native Android release-risk fixture",
         "Official source references",
