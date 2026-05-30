@@ -23,7 +23,7 @@ Use this skill when the user asks to prepare or execute an iOS release, TestFlig
    - Version and build number incremented.
    - Release notes updated for all supported locales.
    - Production environment flags are explicit.
-   - Privacy labels and app privacy manifest match current app behavior.
+   - Privacy labels and app privacy manifest (`PrivacyInfo.xcprivacy`) match current app behavior.
    - Permission purpose strings match actual feature usage.
    - Screenshots, app preview, subtitle, description, support URL, marketing URL, and review notes are current.
    - Sign in, subscriptions, in-app purchases, push notifications, location, background modes, HealthKit, maps, or user-generated content have matching review notes when applicable.
@@ -41,7 +41,8 @@ Use this checklist in the final answer when the user asks for release readiness:
 | Signing/API access | Pass/Fail/Unknown | File or lane | Required fix or none |
 | Build verification | Pass/Fail/Unknown | Command output | Required fix or none |
 | Metadata/release notes | Pass/Fail/Unknown | Locale files/App Store Connect | Required fix or none |
-| Privacy/permissions | Pass/Fail/Unknown | plist/privacy manifest/App Store Connect | Required fix or none |
+| Privacy manifest | Pass/Fail/Unknown | `.xcprivacy` files/App Store Connect | Required fix or none |
+| Privacy/permissions | Pass/Fail/Unknown | plist/entitlements/App Store Connect | Required fix or none |
 | Screenshots/media | Pass/Fail/Unknown | fastlane/App Store Connect | Required fix or none |
 | Review submission | Pass/Fail/Unknown | lane/manual state | Required fix or none |
 
@@ -59,6 +60,13 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 - Screenshot folders: `ios/fastlane/screenshots`.
 
 See `references/fastlane.md` for fastlane-specific checks.
+
+Flag these as high-risk unless the user explicitly confirms they are intentional:
+
+- `submit_for_review: true` or lane defaults that submit for review.
+- `automatic_release: true` or lane defaults that release automatically after review.
+- `skip_screenshots: true` when no separate screenshot upload or manual App Store Connect check is documented.
+- Missing `precheck` when the lane uploads metadata or submits for review.
 
 ## Output expectations
 

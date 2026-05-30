@@ -51,6 +51,10 @@ identify the real release path, and report the exact command or manual step that
 `examples/flutter-fastlane/` shows anonymized fastlane lanes for Flutter iOS and Android projects.
 They are examples only; copy the structure, not the placeholder values.
 
+## Fixtures
+
+`fixtures/` contains anonymized project slices used by validation. They intentionally include release risks so the skills and validator can catch regressions. Do not copy fixtures into an app; use `examples/` for implementation patterns.
+
 ## Validate
 
 Run:

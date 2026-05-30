@@ -1,0 +1,59 @@
+default_platform(:ios)
+
+def to_bool(value, default)
+  return default if value.nil?
+  return value if [true, false].include?(value)
+
+  value.to_s.downcase == "true"
+end
+
+def pubspec_version_info
+  pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
+  raw = pubspec.match(/^version:\s*(\S+)/)[1]
+  version, build = raw.split("+", 2)
+  { version: version, build: build || "1" }
+end
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do |options|
+    env = options[:env] || "prod"
+    info = pubspec_version_info
+
+    sh(
+      "flutter", "build", "ipa", "--release",
+      "--dart-define=APP_ENV=#{env}",
+      "--build-name=#{info[:version]}",
+      "--build-number=#{info[:build]}"
+    )
+
+    upload_to_testflight(skip_waiting_for_build_processing: true)
+  end
+
+  desc "Build and upload to App Store; submit/release only when explicitly requested"
+  lane :release do |options|
+    env = options[:env] || "prod"
+    info = pubspec_version_info
+    submit = to_bool(options[:submit], false)
+    auto_release = to_bool(options[:auto_release], false)
+    confirm = to_bool(options[:confirm], true)
+
+    UI.confirm("Continue?") if confirm
+
+    sh(
+      "flutter", "build", "ipa", "--release",
+      "--dart-define=APP_ENV=#{env}",
+      "--build-name=#{info[:version]}",
+      "--build-number=#{info[:build]}"
+    )
+
+    upload_to_app_store(
+      app_version: info[:version],
+      submit_for_review: submit,
+      automatic_release: auto_release,
+      skip_metadata: false,
+      skip_screenshots: true,
+      force: true
+    )
+  end
+end

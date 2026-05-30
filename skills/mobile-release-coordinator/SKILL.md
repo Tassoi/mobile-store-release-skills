@@ -31,6 +31,8 @@ Use this skill as the entrypoint for general mobile release requests such as "pr
    - Support URL
    - Demo account or review instructions
    - Production API/environment flags
+   - Store privacy artifacts such as `PrivacyInfo.xcprivacy`, App Privacy, and Google Play Data safety
+   - Release signing and store API credentials without exposing secret values
    - Analytics, crash reporting, push, sign-in, location, payments, subscriptions, maps, user content, AI features
 5. Run platform-specific skill workflows.
 6. Summarize shared risks and platform-specific blockers separately.
@@ -54,6 +56,12 @@ For multi-store checks, report:
 3. Android/Google Play state.
 4. Blockers.
 5. Exact next commands or manual console steps.
+
+Always separate:
+
+- Locally verified facts.
+- Store-console checks that remain manual.
+- Risky release automation defaults such as submit, auto-release, production rollout, or debug signing fallback.
 
 ## Rules
 

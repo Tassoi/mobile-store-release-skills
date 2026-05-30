@@ -14,6 +14,61 @@ REQUIRED_SKILLS = {
     "mobile-release-coordinator",
 }
 
+REQUIRED_CONTENT = {
+    "skills/app-store-release/SKILL.md": [
+        "PrivacyInfo.xcprivacy",
+        "submit_for_review: true",
+        "automatic_release: true",
+        "skip_screenshots: true",
+    ],
+    "skills/google-play-release/SKILL.md": [
+        "debug signing",
+        "android/fastlane/Fastfile",
+        "usesCleartextTraffic",
+    ],
+    "skills/mobile-release-coordinator/SKILL.md": [
+        "PrivacyInfo.xcprivacy",
+        "debug signing fallback",
+    ],
+}
+
+FIXTURE_REQUIRED_FILES = [
+    "fixtures/flutter-release-risk/README.md",
+    "fixtures/flutter-release-risk/pubspec.yaml",
+    "fixtures/flutter-release-risk/ios/fastlane/Fastfile",
+    "fixtures/flutter-release-risk/ios/fastlane/metadata/en-US/release_notes.txt",
+    "fixtures/flutter-release-risk/ios/Runner/Info.plist",
+    "fixtures/flutter-release-risk/android/app/build.gradle.kts",
+    "fixtures/flutter-release-risk/android/app/src/main/AndroidManifest.xml",
+]
+
+FIXTURE_REQUIRED_CONTENT = {
+    "fixtures/flutter-release-risk/ios/fastlane/Fastfile": [
+        "submit = to_bool(options[:submit], false)",
+        "auto_release = to_bool(options[:auto_release], false)",
+        "confirm = to_bool(options[:confirm], true)",
+        "submit_for_review: submit",
+        "automatic_release: auto_release",
+        "skip_screenshots: true",
+    ],
+    "fixtures/flutter-release-risk/ios/Runner/Info.plist": [
+        "NSAllowsArbitraryLoads",
+        "NSLocationAlwaysAndWhenInUseUsageDescription",
+        "UIBackgroundModes",
+        "remote-notification",
+    ],
+    "fixtures/flutter-release-risk/android/app/build.gradle.kts": [
+        "hasValidKeystore",
+        "signingConfigs.getByName(\"release\")",
+        "Release signing is not configured",
+    ],
+    "fixtures/flutter-release-risk/android/app/src/main/AndroidManifest.xml": [
+        "android:usesCleartextTraffic=\"true\"",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+    ],
+}
+
 SENSITIVE_PATTERNS = {
     "Webhook URL": re.compile(
         r"https://open\.[^\"'\s]+/" + r"open-apis/bot/|hooks\.slack\.com",
@@ -71,6 +126,38 @@ def validate_sensitive_content() -> None:
                 fail(f"{label} found in {path.relative_to(ROOT)}")
 
 
+def validate_required_content() -> None:
+    for relative_path, snippets in REQUIRED_CONTENT.items():
+        path = ROOT / relative_path
+        if not path.exists():
+            fail(f"{relative_path} is missing")
+
+        text = read(path)
+        for snippet in snippets:
+            if snippet not in text:
+                fail(f"{relative_path} must mention {snippet!r}")
+
+
+def validate_fixtures() -> None:
+    for relative_path in FIXTURE_REQUIRED_FILES:
+        if not (ROOT / relative_path).exists():
+            fail(f"{relative_path} is missing")
+
+    forbidden_paths = [
+        ROOT / "fixtures/flutter-release-risk/ios/Runner/PrivacyInfo.xcprivacy",
+        ROOT / "fixtures/flutter-release-risk/android/fastlane/Fastfile",
+    ]
+    for path in forbidden_paths:
+        if path.exists():
+            fail(f"{path.relative_to(ROOT)} must stay absent for this risk fixture")
+
+    for relative_path, snippets in FIXTURE_REQUIRED_CONTENT.items():
+        text = read(ROOT / relative_path)
+        for snippet in snippets:
+            if snippet not in text:
+                fail(f"{relative_path} must contain fixture pattern {snippet!r}")
+
+
 def main() -> None:
     if not SKILLS.exists():
         fail("skills directory is missing")
@@ -84,6 +171,8 @@ def main() -> None:
         validate_skill(SKILLS / skill_name)
 
     validate_sensitive_content()
+    validate_required_content()
+    validate_fixtures()
     print("OK: skills validated")
 
 

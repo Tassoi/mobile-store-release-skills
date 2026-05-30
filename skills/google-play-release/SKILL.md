@@ -21,11 +21,13 @@ Use this skill when the user asks to prepare or execute an Android release, Goog
 3. Read version sources, signing configuration, package/application ID, build flavor, and Play Console mapping.
 4. Check release readiness:
    - `versionCode` increments and `versionName` matches release intent.
+   - Release signing uses a real release keystore or Play App Signing flow; debug signing for release builds is a blocker.
    - AAB is preferred for Play production uploads unless the project has a valid APK-only reason.
    - Release notes are updated for supported locales.
    - Production environment flags are explicit.
    - Data safety answers match current app behavior and SDKs.
    - Permissions are justified by app features.
+   - `android:usesCleartextTraffic` is disabled or explicitly justified by scoped network security configuration.
    - Target SDK and Play policy requirements are current.
    - App access instructions, demo account, content rating, ads declaration, financial features, health features, and user-generated content declarations are current when applicable.
 5. Run the repository's expected verification before upload. For Flutter, prefer `dart format`, `flutter analyze`, relevant `flutter test`, and the existing build command.
@@ -39,11 +41,13 @@ Use this checklist in the final answer when the user asks for release readiness:
 | Area | Status | Evidence | Action |
 | --- | --- | --- | --- |
 | Version code/name | Pass/Fail/Unknown | File or command | Required fix or none |
-| Signing/service account | Pass/Fail/Unknown | Gradle/fastlane/CI | Required fix or none |
+| Release signing | Pass/Fail/Unknown | Gradle/keystore/Play signing | Required fix or none |
+| Play API access | Pass/Fail/Unknown | fastlane/CI/service account | Required fix or none |
 | Build verification | Pass/Fail/Unknown | Command output | Required fix or none |
 | Artifact | Pass/Fail/Unknown | AAB/APK path | Required fix or none |
 | Release notes | Pass/Fail/Unknown | Locale files/Play Console | Required fix or none |
 | Data safety/permissions | Pass/Fail/Unknown | manifest/dependencies/Play Console | Required fix or none |
+| Cleartext/network security | Pass/Fail/Unknown | manifest/network security config | Required fix or none |
 | Target SDK/policy | Pass/Fail/Unknown | Gradle/policy docs | Required fix or none |
 | Track/rollout | Pass/Fail/Unknown | lane/manual state | Required fix or none |
 
@@ -60,6 +64,12 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 - Metadata folders: `android/fastlane/metadata/android`.
 
 See `references/fastlane.md` for fastlane-specific checks.
+
+If `android/fastlane/Fastfile` is absent, do not invent Play upload automation. Report a manual or CI release path, usually:
+
+- Build an AAB with the repository's Android build command.
+- Verify release signing and version code.
+- Upload the AAB through Play Console or add a dedicated CI/fastlane release path.
 
 ## Output expectations
 

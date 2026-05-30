@@ -31,7 +31,16 @@ bundle exec fastlane ios <lane> key:value key2:value2
 
 - The lane uploads metadata but not screenshots.
 - The lane submits for review automatically.
+- `automatic_release` is true by default, which can release immediately after approval.
+- `submit_for_review` is true by default, which turns a build upload into a review submission.
+- `skip_screenshots: true` requires manual App Store Connect screenshot confirmation or a separate screenshot lane.
 - Build number comes from a file outside Xcode project settings.
 - Release notes exist for only one locale.
 - API key files are referenced from local paths that CI may not have.
 - Production environment flags are implicit or defaulted.
+
+## Risk handling
+
+When a lane can submit or auto-release, recommend an explicit dry-run style command first, for example with `submit:false`, `auto_release:false`, or the repository's equivalent lane options. Preserve the repository's actual option names.
+
+If screenshots are skipped, do not mark screenshots/media as passed from fastlane evidence alone. Mark it `Unknown` or `Fail` until App Store Connect or another screenshot upload path is verified.

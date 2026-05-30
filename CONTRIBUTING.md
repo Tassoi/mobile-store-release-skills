@@ -8,6 +8,7 @@ Contributions are welcome when they keep the skills generic, safe, and verifiabl
 - Prefer official Apple, Google, Android, fastlane, Flutter, React Native, and Expo documentation for platform facts.
 - Keep `SKILL.md` concise. Put detailed platform notes in `references/`.
 - Examples must be anonymized and runnable only after replacing placeholders.
+- Fixtures must be anonymized and may intentionally contain risky patterns for validation.
 - Do not add project-specific company process unless it is clearly marked as a generic pattern.
 
 ## Before opening a PR

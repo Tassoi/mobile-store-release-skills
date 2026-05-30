@@ -29,6 +29,12 @@ bundle exec fastlane android <lane> key:value key2:value2
 
 - `versionCode` is not incremented.
 - The lane uploads to production by default.
+- The project has no `android/fastlane/Fastfile`, so Play upload is manual or handled by another CI path.
+- Release builds fall back to debug signing when keystore config is missing.
 - Service account JSON is only available locally.
 - Release status is `completed` when staged rollout was intended.
 - Data safety declarations are stale after SDK or feature changes.
+
+## When Android fastlane is absent
+
+Report the absence explicitly. Recommend the repository's existing build command for producing an AAB, then list Play Console manual steps or suggest adding a fastlane/CI lane only if the user wants automation.
