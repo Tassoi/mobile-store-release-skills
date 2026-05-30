@@ -61,6 +61,7 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 
 See `references/fastlane.md` for fastlane-specific checks.
 See `references/official-sources.md` for policy-sensitive Apple source selection.
+See `references/privacy.md` for privacy labels, privacy manifests, permission strings, and App Review note checks.
 
 Flag these as high-risk unless the user explicitly confirms they are intentional:
 

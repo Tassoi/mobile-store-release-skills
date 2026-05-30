@@ -65,6 +65,7 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 
 See `references/fastlane.md` for fastlane-specific checks.
 See `references/official-sources.md` for policy-sensitive Google Play source selection.
+See `references/data-safety.md` for Data safety, permissions, release signing, and cleartext network checks.
 
 If `android/fastlane/Fastfile` is absent, do not invent Play upload automation. Report a manual or CI release path, usually:
 

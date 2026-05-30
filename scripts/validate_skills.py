@@ -14,6 +14,18 @@ REQUIRED_SKILLS = {
     "mobile-release-coordinator",
 }
 
+GOVERNANCE_FILES = [
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/policy_update.yml",
+    ".github/ISSUE_TEMPLATE/skill_gap.yml",
+    ".github/pull_request_template.md",
+    ".github/workflows/validate.yml",
+    "CONTRIBUTING.md",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+]
+
 REQUIRED_CONTENT = {
     "skills/app-store-release/SKILL.md": [
         "PrivacyInfo.xcprivacy",
@@ -156,6 +168,10 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def relative(path: Path) -> str:
+    return str(path.relative_to(ROOT))
+
+
 def validate_skill(skill_dir: Path) -> None:
     skill_md = skill_dir / "SKILL.md"
     metadata = skill_dir / "agents" / "openai.yaml"
@@ -180,6 +196,30 @@ def validate_skill(skill_dir: Path) -> None:
         fail(f"{metadata.relative_to(ROOT)} default_prompt must mention ${skill_dir.name}")
 
 
+def validate_reference_links(skill_dir: Path) -> None:
+    skill_md = skill_dir / "SKILL.md"
+    references_dir = skill_dir / "references"
+    body = read(skill_md)
+    referenced = set(re.findall(r"`(references/[^`]+\.md)`", body))
+
+    for reference in referenced:
+        path = skill_dir / reference
+        if not path.exists():
+            fail(f"{relative(skill_md)} references missing file {reference}")
+
+    if references_dir.exists():
+        for reference_path in references_dir.glob("*.md"):
+            reference = f"references/{reference_path.name}"
+            if reference not in body:
+                fail(f"{relative(reference_path)} is not referenced from {relative(skill_md)}")
+
+
+def validate_governance_files() -> None:
+    for relative_path in GOVERNANCE_FILES:
+        if not (ROOT / relative_path).exists():
+            fail(f"{relative_path} is missing")
+
+
 def validate_sensitive_content() -> None:
     checked_suffixes = {".md", ".txt", ".rb", ".py", ".yaml", ".yml", ".json"}
     for path in ROOT.rglob("*"):
@@ -189,6 +229,49 @@ def validate_sensitive_content() -> None:
         for label, pattern in SENSITIVE_PATTERNS.items():
             if pattern.search(text):
                 fail(f"{label} found in {path.relative_to(ROOT)}")
+
+
+def validate_examples_and_fixtures_contract() -> None:
+    examples_dir = ROOT / "examples"
+    fixtures_dir = ROOT / "fixtures"
+
+    if not examples_dir.exists():
+        fail("examples directory is missing")
+    if not fixtures_dir.exists():
+        fail("fixtures directory is missing")
+
+    for readme in examples_dir.glob("*/README.md"):
+        text = read(readme).lower()
+        if "anonymized" not in text or "placeholder" not in text:
+            fail(f"{relative(readme)} must explain anonymized placeholders")
+        if "do not copy this fixture" in text or "validation fixture" in text:
+            fail(f"{relative(readme)} mixes fixture language into an example")
+
+    for readme in fixtures_dir.glob("*/README.md"):
+        text = read(readme).lower()
+        if "do not copy" not in text:
+            fail(f"{relative(readme)} must say fixtures should not be copied into apps")
+        if "fixture" not in text:
+            fail(f"{relative(readme)} must identify itself as a fixture")
+
+
+def validate_readme_fixture_matrix() -> None:
+    readme = read(ROOT / "README.md")
+    matrix_expectations = {
+        "flutter-release-risk": "| Flutter + iOS fastlane | Supported |",
+        "native-ios-release-risk": "| Native iOS | Partial |",
+        "native-android-release-risk": "| Native Android | Partial |",
+    }
+
+    for fixture_name, matrix_row in matrix_expectations.items():
+        if not (ROOT / "fixtures" / fixture_name).exists():
+            fail(f"fixtures/{fixture_name} is missing")
+        if matrix_row not in readme:
+            fail(f"README support matrix must include {matrix_row!r}")
+
+    for fixture_name in matrix_expectations:
+        if f"`{fixture_name}`" not in readme:
+            fail(f"README fixtures section must mention `{fixture_name}`")
 
 
 def validate_required_content() -> None:
@@ -235,11 +318,16 @@ def main() -> None:
         fail(f"missing required skills: {', '.join(sorted(missing))}")
 
     for skill_name in sorted(REQUIRED_SKILLS):
-        validate_skill(SKILLS / skill_name)
+        skill_dir = SKILLS / skill_name
+        validate_skill(skill_dir)
+        validate_reference_links(skill_dir)
 
+    validate_governance_files()
     validate_sensitive_content()
     validate_required_content()
     validate_fixtures()
+    validate_examples_and_fixtures_contract()
+    validate_readme_fixture_matrix()
     print("OK: skills validated")
 
 
