@@ -4,6 +4,8 @@
 
 Reusable Codex skills for preparing mobile app releases for Apple App Store and Google Play.
 
+中文文档见 [README.zh-CN.md](README.zh-CN.md).
+
 The skills are intentionally project-agnostic. They detect local release tooling such as fastlane,
 Flutter, React Native, native iOS, or native Android, then adapt the checklist to the repository.
 
@@ -139,3 +141,7 @@ The validator checks required skill files, UI metadata, frontmatter, and common 
 This repository provides agent workflow guidance. It does not replace Apple, Google, Android,
 Flutter, React Native, Expo, or fastlane documentation. Store policies change over time, so agents
 using these skills should verify current policy facts with official sources before final release advice.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).

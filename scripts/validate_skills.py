@@ -21,8 +21,10 @@ GOVERNANCE_FILES = [
     ".github/pull_request_template.md",
     ".github/workflows/validate.yml",
     "CONTRIBUTING.md",
+    "CHANGELOG.md",
     "LICENSE",
     "README.md",
+    "README.zh-CN.md",
     "SECURITY.md",
 ]
 
@@ -129,6 +131,24 @@ FIXTURE_REQUIRED_CONTENT = {
         "| Native Android | Partial |",
         "dedicated fixture coverage exists",
         "tests/golden/",
+        "README.zh-CN.md",
+        "CHANGELOG.md",
+    ],
+    "README.zh-CN.md": [
+        "快速开始",
+        "支持矩阵",
+        "安全模型",
+        "Fixtures 与 Golden Expectations",
+        "python3 scripts/validate_skills.py",
+    ],
+    "CHANGELOG.md": [
+        "## Unreleased",
+        "Native iOS release-risk fixture",
+        "Native Android release-risk fixture",
+        "Official source references",
+        "Golden expected outputs",
+        "Chinese README",
+        "Validator now checks",
     ],
     "skills/app-store-release/references/official-sources.md": [
         "App Review Guidelines",
