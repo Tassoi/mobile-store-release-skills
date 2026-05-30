@@ -1,0 +1,2 @@
+package_name("com.example.app")
+json_key_file(ENV.fetch("GOOGLE_PLAY_SERVICE_ACCOUNT_JSON"))

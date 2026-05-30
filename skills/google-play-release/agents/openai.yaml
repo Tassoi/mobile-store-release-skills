@@ -1,0 +1,7 @@
+interface:
+  display_name: "Google Play Release"
+  short_description: "Prepare and verify Android Play releases"
+  brand_color: "#34A853"
+  default_prompt: "Use $google-play-release to prepare this Android app for Google Play release."
+policy:
+  allow_implicit_invocation: true

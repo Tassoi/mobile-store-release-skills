@@ -1,0 +1,7 @@
+interface:
+  display_name: "App Store Release"
+  short_description: "Prepare and verify iOS store releases"
+  brand_color: "#0A84FF"
+  default_prompt: "Use $app-store-release to prepare this iOS app for TestFlight or App Store submission."
+policy:
+  allow_implicit_invocation: true

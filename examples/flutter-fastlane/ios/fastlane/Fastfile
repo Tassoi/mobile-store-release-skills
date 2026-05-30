@@ -1,0 +1,80 @@
+default_platform(:ios)
+
+API_KEY_PATH = ENV.fetch("APP_STORE_CONNECT_API_KEY_PATH")
+API_KEY_ID = ENV.fetch("APP_STORE_CONNECT_API_KEY_ID")
+API_ISSUER_ID = ENV.fetch("APP_STORE_CONNECT_ISSUER_ID")
+
+def app_store_api_key
+  app_store_connect_api_key(
+    key_id: API_KEY_ID,
+    issuer_id: API_ISSUER_ID,
+    key_filepath: API_KEY_PATH
+  )
+end
+
+def flutter_version_info
+  pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
+  match = pubspec.match(/^version:\s*(\S+)/)
+  UI.user_error!("Cannot find version in pubspec.yaml") unless match
+
+  version, build = match[1].split("+", 2)
+  { version: version, build: build || "1" }
+end
+
+def to_bool(value, default)
+  return default if value.nil?
+  return value if [true, false].include?(value)
+
+  value.to_s.downcase == "true"
+end
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :beta do |options|
+    env = options[:env] || "prod"
+    info = flutter_version_info
+
+    Dir.chdir("..") do
+      sh(
+        "flutter", "build", "ipa", "--release",
+        "--dart-define=APP_ENV=#{env}",
+        "--build-name=#{info[:version]}",
+        "--build-number=#{info[:build]}"
+      )
+    end
+
+    upload_to_testflight(
+      api_key: app_store_api_key,
+      ipa: Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first,
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Build, upload to App Store, and optionally submit for review"
+  lane :release do |options|
+    env = options[:env] || "prod"
+    submit = to_bool(options[:submit], false)
+    auto_release = to_bool(options[:auto_release], false)
+    info = flutter_version_info
+
+    Dir.chdir("..") do
+      sh(
+        "flutter", "build", "ipa", "--release",
+        "--dart-define=APP_ENV=#{env}",
+        "--build-name=#{info[:version]}",
+        "--build-number=#{info[:build]}"
+      )
+    end
+
+    upload_to_app_store(
+      api_key: app_store_api_key,
+      ipa: Dir[File.expand_path("../../build/ios/ipa/*.ipa", __dir__)].first,
+      app_version: info[:version],
+      submit_for_review: submit,
+      automatic_release: auto_release,
+      skip_metadata: false,
+      skip_screenshots: true,
+      force: true
+    )
+  end
+end

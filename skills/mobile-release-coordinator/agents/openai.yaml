@@ -1,0 +1,7 @@
+interface:
+  display_name: "Mobile Release Coordinator"
+  short_description: "Coordinate multi-store mobile releases"
+  brand_color: "#7C3AED"
+  default_prompt: "Use $mobile-release-coordinator to check readiness for this mobile app release."
+policy:
+  allow_implicit_invocation: true

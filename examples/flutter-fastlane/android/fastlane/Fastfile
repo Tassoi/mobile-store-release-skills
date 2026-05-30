@@ -1,0 +1,59 @@
+default_platform(:android)
+
+def flutter_version_info
+  pubspec = File.read(File.expand_path("../../pubspec.yaml", __dir__))
+  match = pubspec.match(/^version:\s*(\S+)/)
+  UI.user_error!("Cannot find version in pubspec.yaml") unless match
+
+  version, build = match[1].split("+", 2)
+  { version: version, build: build || "1" }
+end
+
+platform :android do
+  desc "Build and upload to Google Play internal testing"
+  lane :internal do |options|
+    env = options[:env] || "prod"
+    info = flutter_version_info
+
+    Dir.chdir("..") do
+      sh(
+        "flutter", "build", "appbundle", "--release",
+        "--dart-define=APP_ENV=#{env}",
+        "--build-name=#{info[:version]}",
+        "--build-number=#{info[:build]}"
+      )
+    end
+
+    upload_to_play_store(
+      track: "internal",
+      aab: File.expand_path("../../build/app/outputs/bundle/release/app-release.aab", __dir__),
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build and upload to Google Play production with staged rollout"
+  lane :production do |options|
+    env = options[:env] || "prod"
+    rollout = options[:rollout] || "0.1"
+    info = flutter_version_info
+
+    Dir.chdir("..") do
+      sh(
+        "flutter", "build", "appbundle", "--release",
+        "--dart-define=APP_ENV=#{env}",
+        "--build-name=#{info[:version]}",
+        "--build-number=#{info[:build]}"
+      )
+    end
+
+    upload_to_play_store(
+      track: "production",
+      rollout: rollout.to_f,
+      release_status: "inProgress",
+      aab: File.expand_path("../../build/app/outputs/bundle/release/app-release.aab", __dir__),
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
