@@ -26,6 +26,12 @@ GOVERNANCE_FILES = [
     "SECURITY.md",
 ]
 
+GOLDEN_EXPECTED_FILES = [
+    "tests/golden/flutter-release-risk.expected.md",
+    "tests/golden/native-ios-release-risk.expected.md",
+    "tests/golden/native-android-release-risk.expected.md",
+]
+
 REQUIRED_CONTENT = {
     "skills/app-store-release/SKILL.md": [
         "PrivacyInfo.xcprivacy",
@@ -122,6 +128,7 @@ FIXTURE_REQUIRED_CONTENT = {
         "| Native iOS | Partial |",
         "| Native Android | Partial |",
         "dedicated fixture coverage exists",
+        "tests/golden/",
     ],
     "skills/app-store-release/references/official-sources.md": [
         "App Review Guidelines",
@@ -138,6 +145,42 @@ FIXTURE_REQUIRED_CONTENT = {
         "Play App Signing",
         "Must re-check official sources",
         "Local-first rule",
+    ],
+}
+
+GOLDEN_REQUIRED_CONTENT = {
+    "tests/golden/flutter-release-risk.expected.md": [
+        "Fixture: `fixtures/flutter-release-risk`",
+        "Project stack: Flutter",
+        "ios/fastlane/Fastfile",
+        "submit:false",
+        "auto_release:false",
+        "confirm:true",
+        "skip_screenshots:true",
+        "PrivacyInfo.xcprivacy",
+        "`android/fastlane/Fastfile` is absent",
+        "android:usesCleartextTraffic=\"true\"",
+        "Data safety",
+    ],
+    "tests/golden/native-ios-release-risk.expected.md": [
+        "Fixture: `fixtures/native-ios-release-risk`",
+        "Project stack: native iOS",
+        "`ios/fastlane/Fastfile` is absent",
+        "Xcode archive/export",
+        "`PrivacyInfo.xcprivacy` exists",
+        "push notifications",
+        "Apple Sign In",
+        "official Apple source checks",
+    ],
+    "tests/golden/native-android-release-risk.expected.md": [
+        "Fixture: `fixtures/native-android-release-risk`",
+        "Project stack: native Android",
+        "`android/fastlane/Fastfile` is absent",
+        "targetSdk = 35",
+        "must not fall back to debug signing",
+        "Release signing is not configured",
+        "android:usesCleartextTraffic=\"true\"",
+        "Data safety",
     ],
 }
 
@@ -274,6 +317,18 @@ def validate_readme_fixture_matrix() -> None:
             fail(f"README fixtures section must mention `{fixture_name}`")
 
 
+def validate_golden_outputs() -> None:
+    for relative_path in GOLDEN_EXPECTED_FILES:
+        if not (ROOT / relative_path).exists():
+            fail(f"{relative_path} is missing")
+
+    for relative_path, snippets in GOLDEN_REQUIRED_CONTENT.items():
+        text = read(ROOT / relative_path)
+        for snippet in snippets:
+            if snippet not in text:
+                fail(f"{relative_path} must contain golden expectation {snippet!r}")
+
+
 def validate_required_content() -> None:
     for relative_path, snippets in REQUIRED_CONTENT.items():
         path = ROOT / relative_path
@@ -328,6 +383,7 @@ def main() -> None:
     validate_fixtures()
     validate_examples_and_fixtures_contract()
     validate_readme_fixture_matrix()
+    validate_golden_outputs()
     print("OK: skills validated")
 
 
