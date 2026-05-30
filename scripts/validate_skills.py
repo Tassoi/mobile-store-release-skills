@@ -17,11 +17,13 @@ REQUIRED_SKILLS = {
 REQUIRED_CONTENT = {
     "skills/app-store-release/SKILL.md": [
         "PrivacyInfo.xcprivacy",
+        "references/official-sources.md",
         "submit_for_review: true",
         "automatic_release: true",
         "skip_screenshots: true",
     ],
     "skills/google-play-release/SKILL.md": [
+        "references/official-sources.md",
         "debug signing",
         "android/fastlane/Fastfile",
         "usesCleartextTraffic",
@@ -40,6 +42,16 @@ FIXTURE_REQUIRED_FILES = [
     "fixtures/flutter-release-risk/ios/Runner/Info.plist",
     "fixtures/flutter-release-risk/android/app/build.gradle.kts",
     "fixtures/flutter-release-risk/android/app/src/main/AndroidManifest.xml",
+    "fixtures/native-ios-release-risk/README.md",
+    "fixtures/native-ios-release-risk/App.xcodeproj/project.pbxproj",
+    "fixtures/native-ios-release-risk/App/Info.plist",
+    "fixtures/native-ios-release-risk/App/PrivacyInfo.xcprivacy",
+    "fixtures/native-ios-release-risk/App/App.entitlements",
+    "fixtures/native-android-release-risk/README.md",
+    "fixtures/native-android-release-risk/settings.gradle.kts",
+    "fixtures/native-android-release-risk/build.gradle.kts",
+    "fixtures/native-android-release-risk/app/build.gradle.kts",
+    "fixtures/native-android-release-risk/app/src/main/AndroidManifest.xml",
 ]
 
 FIXTURE_REQUIRED_CONTENT = {
@@ -67,6 +79,54 @@ FIXTURE_REQUIRED_CONTENT = {
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
     ],
+    "fixtures/native-ios-release-risk/App/Info.plist": [
+        "CFBundleIdentifier",
+        "NSCameraUsageDescription",
+        "NSLocationWhenInUseUsageDescription",
+        "UIBackgroundModes",
+    ],
+    "fixtures/native-ios-release-risk/App/PrivacyInfo.xcprivacy": [
+        "NSPrivacyAccessedAPITypes",
+        "NSPrivacyAccessedAPICategoryUserDefaults",
+        "NSPrivacyTracking",
+    ],
+    "fixtures/native-ios-release-risk/App/App.entitlements": [
+        "aps-environment",
+        "com.apple.developer.applesignin",
+        "com.apple.developer.associated-domains",
+    ],
+    "fixtures/native-android-release-risk/app/build.gradle.kts": [
+        "com.android.application",
+        "targetSdk = 35",
+        "hasValidKeystore",
+        "Release signing is not configured",
+    ],
+    "fixtures/native-android-release-risk/app/src/main/AndroidManifest.xml": [
+        "android:usesCleartextTraffic=\"true\"",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.ACCESS_FINE_LOCATION",
+    ],
+    "README.md": [
+        "| Native iOS | Partial |",
+        "| Native Android | Partial |",
+        "dedicated fixture coverage exists",
+    ],
+    "skills/app-store-release/references/official-sources.md": [
+        "App Review Guidelines",
+        "App Store Connect Help",
+        "Privacy manifest files",
+        "Must re-check official sources",
+        "Local-first rule",
+    ],
+    "skills/google-play-release/references/official-sources.md": [
+        "Play Console Help",
+        "Google Play Policy Center",
+        "Target API level requirements",
+        "Data safety section",
+        "Play App Signing",
+        "Must re-check official sources",
+        "Local-first rule",
+    ],
 }
 
 SENSITIVE_PATTERNS = {
@@ -78,7 +138,12 @@ SENSITIVE_PATTERNS = {
     "Apple private key content": re.compile("-----BEGIN EC " + "PRIVATE KEY-----"),
     "Private key file": re.compile(r"AuthKey_[A-Z0-9]+\.p8"),
     "Keystore password": re.compile(r"(storePassword|keyPassword)\s*[:=]\s*['\"][^'\"]+['\"]"),
-    "Non-example bundle id": re.compile(r"\bcom\.(?!example\b)[a-z0-9][a-z0-9_.-]+\b", re.I),
+    "Non-example bundle id": re.compile(
+        r"\b"
+        + r"com\."
+        + r"(?!(example|apple|android|google)\b)[a-z0-9][a-z0-9_.-]+\b",
+        re.I,
+    ),
 }
 
 
@@ -146,6 +211,8 @@ def validate_fixtures() -> None:
     forbidden_paths = [
         ROOT / "fixtures/flutter-release-risk/ios/Runner/PrivacyInfo.xcprivacy",
         ROOT / "fixtures/flutter-release-risk/android/fastlane/Fastfile",
+        ROOT / "fixtures/native-ios-release-risk/ios/fastlane/Fastfile",
+        ROOT / "fixtures/native-android-release-risk/android/fastlane/Fastfile",
     ]
     for path in forbidden_paths:
         if path.exists():

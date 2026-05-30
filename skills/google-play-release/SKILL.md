@@ -11,7 +11,7 @@ Use this skill when the user asks to prepare or execute an Android release, Goog
 
 1. Inspect the repository before recommending commands.
 2. If `android/fastlane/Fastfile` exists, read it and identify the actual lanes, parameters, build command, track behavior, signing assumptions, and upload behavior.
-3. Treat Play policy deadlines, target SDK requirements, and Data safety requirements as time-sensitive. Verify current facts against official Google Play or Android documentation before final advice.
+3. Treat Play policy deadlines, target SDK requirements, and Data safety requirements as time-sensitive. Read `references/official-sources.md` and verify current facts against official Google Play or Android documentation before final advice.
 4. Never expose or copy real keystore passwords, service account JSON, package names, signing keys, webhook URLs, or production credentials into public artifacts.
 
 ## Workflow
@@ -64,6 +64,7 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 - Metadata folders: `android/fastlane/metadata/android`.
 
 See `references/fastlane.md` for fastlane-specific checks.
+See `references/official-sources.md` for policy-sensitive Google Play source selection.
 
 If `android/fastlane/Fastfile` is absent, do not invent Play upload automation. Report a manual or CI release path, usually:
 

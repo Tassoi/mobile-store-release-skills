@@ -11,7 +11,7 @@ Use this skill when the user asks to prepare or execute an iOS release, TestFlig
 
 1. Inspect the repository before recommending commands.
 2. If `ios/fastlane/Fastfile` exists, read it and identify the actual lanes, parameters, build command, metadata behavior, signing assumptions, and upload behavior.
-3. If the task involves Apple platform rules, APIs, signing, privacy, or App Review policy, verify current facts against official Apple documentation or the Apple developer docs MCP.
+3. If the task involves Apple platform rules, APIs, signing, privacy, or App Review policy, read `references/official-sources.md` and verify current facts against official Apple documentation or the Apple developer docs MCP.
 4. Never expose or copy real App Store Connect API keys, issuer IDs, team IDs, private key paths, webhook URLs, or production credentials into generated public artifacts.
 
 ## Workflow
@@ -60,6 +60,7 @@ If fastlane exists, inspect the lanes instead of assuming names. Look for:
 - Screenshot folders: `ios/fastlane/screenshots`.
 
 See `references/fastlane.md` for fastlane-specific checks.
+See `references/official-sources.md` for policy-sensitive Apple source selection.
 
 Flag these as high-risk unless the user explicitly confirms they are intentional:
 

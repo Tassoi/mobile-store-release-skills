@@ -83,8 +83,8 @@ scripts/     Repository validation tools.
 | Flutter without fastlane | Supported | Reports manual store or CI paths instead of inventing upload automation. |
 | Generic iOS fastlane | Supported | Reads actual lanes and options before recommending commands. |
 | Generic Android fastlane | Supported | Reads actual tracks, rollout status, metadata, and service account assumptions. |
-| Native iOS | Partial | General App Store and fastlane checks apply; dedicated fixture coverage is planned. |
-| Native Android | Partial | General Gradle and Play checks apply; dedicated fixture coverage is planned. |
+| Native iOS | Partial | General App Store and Xcode checks apply; dedicated fixture coverage exists. |
+| Native Android | Partial | General Gradle and Play checks apply; dedicated fixture coverage exists. |
 | React Native | Planned | Contributions should include anonymized fixtures. |
 | Expo/EAS | Planned | Contributions should include EAS-specific references and fixtures. |
 
@@ -101,7 +101,7 @@ scripts/     Repository validation tools.
 - Inspect first, then recommend. Do not invent fastlane lanes, Gradle tasks, or store-console state.
 - Do not run production release commands unless the user explicitly asks for execution.
 - Treat submission, auto-release, production rollout, and signing changes as high-risk actions.
-- Verify time-sensitive App Store and Google Play policy facts against official sources.
+- Verify time-sensitive App Store and Google Play policy facts against the platform `references/official-sources.md` files and the linked official sources.
 - Never commit real credentials, private identifiers, webhook URLs, store-console screenshots, or organization-specific release data.
 
 ## Example
@@ -112,6 +112,12 @@ They are examples only; copy the structure, not the placeholder values.
 ## Fixtures
 
 `fixtures/` contains anonymized project slices used by validation. They intentionally include release risks so the skills and validator can catch regressions. Do not copy fixtures into an app; use `examples/` for implementation patterns.
+
+Current fixtures:
+
+- `flutter-release-risk`: Flutter + iOS fastlane + Android Gradle release risks.
+- `native-ios-release-risk`: Native iOS project, privacy manifest, entitlements, and review-sensitive permissions.
+- `native-android-release-risk`: Native Android Gradle project, release signing, permissions, and cleartext traffic.
 
 ## Validate
 
