@@ -1,13 +1,39 @@
 # Mobile Store Release Skills
 
+[![Validate skills](../../actions/workflows/validate.yml/badge.svg)](../../actions/workflows/validate.yml)
+
 Reusable Codex skills for preparing mobile app releases for Apple App Store and Google Play.
 
 The skills are intentionally project-agnostic. They detect local release tooling such as fastlane,
 Flutter, React Native, native iOS, or native Android, then adapt the checklist to the repository.
 
+## Quick Start
+
+```sh
+git clone https://github.com/Tassoi/mobile-store-release-skills.git
+cd mobile-store-release-skills
+python3 scripts/validate_skills.py
+```
+
+Install the skills:
+
+```sh
+CODEX_SKILLS_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
+mkdir -p "$CODEX_SKILLS_DIR"
+cp -R skills/app-store-release "$CODEX_SKILLS_DIR/"
+cp -R skills/google-play-release "$CODEX_SKILLS_DIR/"
+cp -R skills/mobile-release-coordinator "$CODEX_SKILLS_DIR/"
+```
+
+Then open a mobile app repository and ask Codex:
+
+```text
+Use $mobile-release-coordinator to check whether this app is ready for store release.
+```
+
 ## Install
 
-Clone this repository, then copy the skills you want into your Codex skills directory:
+Copy the skills you want into your Codex skills directory:
 
 ```sh
 CODEX_SKILLS_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
@@ -38,6 +64,30 @@ Use $google-play-release to inspect Android release readiness and find Play Cons
 The skills do not run production release commands blindly. They first inspect the repository,
 identify the real release path, and report the exact command or manual step that matches the project.
 
+## Repository Layout
+
+```text
+skills/      Installable Codex skills.
+examples/    Anonymized copyable patterns.
+fixtures/    Anonymized validation fixtures; do not copy into apps.
+scripts/     Repository validation tools.
+.github/     CI, issue templates, and PR template.
+```
+
+## Support Matrix
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| Flutter + iOS fastlane | Supported | Detects TestFlight/App Store lanes, metadata, screenshots, submission, and auto-release risks. |
+| Flutter + Android Gradle | Supported | Checks versioning, release signing, AAB path, permissions, cleartext traffic, and Play readiness. |
+| Flutter without fastlane | Supported | Reports manual store or CI paths instead of inventing upload automation. |
+| Generic iOS fastlane | Supported | Reads actual lanes and options before recommending commands. |
+| Generic Android fastlane | Supported | Reads actual tracks, rollout status, metadata, and service account assumptions. |
+| Native iOS | Partial | General App Store and fastlane checks apply; dedicated fixture coverage is planned. |
+| Native Android | Partial | General Gradle and Play checks apply; dedicated fixture coverage is planned. |
+| React Native | Planned | Contributions should include anonymized fixtures. |
+| Expo/EAS | Planned | Contributions should include EAS-specific references and fixtures. |
+
 ## Design
 
 - Do not hard-code bundle IDs, team IDs, issuer IDs, API key paths, webhook URLs, or organization-specific policies.
@@ -45,6 +95,14 @@ identify the real release path, and report the exact command or manual step that
 - Prefer the repository's existing release path. If `ios/fastlane/Fastfile` or `android/fastlane/Fastfile` exists, inspect it before suggesting commands.
 - Keep public examples anonymized.
 - Keep `SKILL.md` concise and move platform details into `references/`.
+
+## Safety Model
+
+- Inspect first, then recommend. Do not invent fastlane lanes, Gradle tasks, or store-console state.
+- Do not run production release commands unless the user explicitly asks for execution.
+- Treat submission, auto-release, production rollout, and signing changes as high-risk actions.
+- Verify time-sensitive App Store and Google Play policy facts against official sources.
+- Never commit real credentials, private identifiers, webhook URLs, store-console screenshots, or organization-specific release data.
 
 ## Example
 

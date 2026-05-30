@@ -1,0 +1,42 @@
+name: Bug report
+description: Report incorrect skill behavior, validation failures, or documentation bugs.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include real credentials, private package names, bundle IDs, team IDs, issuer IDs, service account JSON, webhook URLs, or store-console screenshots.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should the skill or validator do instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide anonymized steps, fixture snippets, or command output.
+      placeholder: |
+        1. Run ...
+        2. Observe ...
+    validations:
+      required: false
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation output
+      description: Output from `python3 scripts/validate_skills.py`, if relevant.
+      render: shell
+    validations:
+      required: false

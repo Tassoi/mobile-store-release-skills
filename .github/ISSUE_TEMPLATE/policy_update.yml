@@ -1,0 +1,40 @@
+name: Store policy update
+description: Report changed Apple or Google release policy guidance.
+title: "[Policy]: "
+labels:
+  - policy
+body:
+  - type: dropdown
+    id: store
+    attributes:
+      label: Store
+      options:
+        - Apple App Store
+        - Google Play
+        - Both
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Policy change
+      description: Summarize what changed and which skill/reference is affected.
+    validations:
+      required: true
+  - type: textarea
+    id: official_sources
+    attributes:
+      label: Official sources
+      description: Link Apple, Google, Android, fastlane, Flutter, React Native, or Expo official docs.
+      placeholder: |
+        - https://...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_update
+    attributes:
+      label: Proposed repository update
+      description: Which files or checklist items should change?
+    validations:
+      required: false

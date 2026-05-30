@@ -1,0 +1,42 @@
+name: Skill gap
+description: Request support for a project type, release tool, or store workflow.
+title: "[Skill gap]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please anonymize project details. Do not include secrets or private store-console data.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - iOS / App Store
+        - Android / Google Play
+        - Both
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: stack
+    attributes:
+      label: Stack or release tooling
+      placeholder: Flutter + fastlane, React Native, Expo/EAS, native Android, native iOS
+    validations:
+      required: true
+  - type: textarea
+    id: gap
+    attributes:
+      label: Missing behavior
+      description: What should the skill detect, ask, or report?
+    validations:
+      required: true
+  - type: textarea
+    id: anonymized_context
+    attributes:
+      label: Anonymized context
+      description: Provide sanitized file snippets or paths that demonstrate the scenario.
+    validations:
+      required: false
